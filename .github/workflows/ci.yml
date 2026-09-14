@@ -1,0 +1,65 @@
+name: ci
+
+# Lint on the oldest and newest supported PHP, run WordPress's official
+# Plugin Check, and on a version tag (v1.2.3) publish nofluff-analytics.zip
+# as a release asset. The plugin's updater and the dashboard download
+# link both point at the latest release asset.
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: php -l (${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ["7.4", "8.3"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+      - run: find nofluff-analytics -name '*.php' -print0 | xargs -0 -n1 php -l
+
+  plugin-check:
+    name: WordPress Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: nofluff-analytics
+          # Self-updating from GitHub is intentional until the plugin is on WordPress.org.
+          exclude-checks: plugin_updater
+
+  release:
+    name: release zip
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [lint, plugin-check]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Versions must match the tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          header="$(grep -oP '^\s*\*\s*Version:\s*\K[0-9.]+' nofluff-analytics/nofluff-analytics.php)"
+          constant="$(grep -oP "NOFLUFF_ANALYTICS_VERSION', '\K[0-9.]+" nofluff-analytics/nofluff-analytics.php)"
+          stable="$(grep -oP '^Stable tag:\s*\K[0-9.]+' nofluff-analytics/readme.txt)"
+          echo "tag=$tag header=$header constant=$constant stable=$stable"
+          test "$tag" = "$header" && test "$tag" = "$constant" && test "$tag" = "$stable"
+      - name: Build zip
+        run: zip -r nofluff-analytics.zip nofluff-analytics -x '*.DS_Store'
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" nofluff-analytics.zip --title "No Fluff Analytics $GITHUB_REF_NAME" --generate-notes
