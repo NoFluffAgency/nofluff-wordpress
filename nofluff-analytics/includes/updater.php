@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NOFLUFF_ANALYTICS_RELEASES', 'https://api.github.com/repos/TimeToGoogle/nofluff-wordpress/releases/latest' );
+define( 'NOFLUFF_ANALYTICS_RELEASES', 'https://api.github.com/repos/NoFluffAgency/nofluff-wordpress/releases/latest' );
 
 add_filter( 'update_plugins_github.com', 'nofluff_analytics_check_update', 10, 3 );
 
@@ -35,7 +35,7 @@ function nofluff_analytics_check_update( $update, $plugin_data, $plugin_file ) {
 		return $update;
 	}
 	return array(
-		'id'           => 'github.com/TimeToGoogle/nofluff-wordpress',
+		'id'           => 'github.com/NoFluffAgency/nofluff-wordpress',
 		'slug'         => 'nofluff-analytics',
 		'plugin'       => $plugin_file,
 		'version'      => $release['version'],

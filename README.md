@@ -5,7 +5,7 @@ adds the cookieless tracking script, reports form submissions and
 WooCommerce orders as goal events, keeps logged-in editors out of the
 numbers, and survives the common caching and optimisation plugins.
 
-**Download:** [latest release](https://github.com/TimeToGoogle/nofluff-wordpress/releases/latest/download/nofluff-analytics.zip)
+**Download:** [latest release](https://github.com/NoFluffAgency/nofluff-wordpress/releases/latest/download/nofluff-analytics.zip)
 → WordPress → Plugins → Add New → Upload Plugin → Settings → No Fluff → paste
 the site ID from the dashboard.
 
