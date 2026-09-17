@@ -1,9 +1,9 @@
 name: ci
 
-# Lint on the oldest and newest supported PHP, run WordPress's official
-# Plugin Check, and on a version tag (v1.2.3) publish nofluff-analytics.zip
-# as a release asset. The plugin's updater and the dashboard download
-# link both point at the latest release asset.
+# Lint and check the order signature on the oldest and newest supported PHP,
+# run WordPress's official Plugin Check, and on a version tag (v1.2.3)
+# publish nofluff-analytics.zip as a release asset. The plugin's updater and
+# the dashboard download link both point at the latest release asset.
 
 on:
   push:
@@ -28,6 +28,7 @@ jobs:
           php-version: ${{ matrix.php }}
           tools: none
       - run: find nofluff-analytics -name '*.php' -print0 | xargs -0 -n1 php -l
+      - run: php tests/signature.php
 
   plugin-check:
     name: WordPress Plugin Check

@@ -4,7 +4,7 @@ Tags: analytics, cookieless, privacy, core web vitals, statistics
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,13 +17,14 @@ No Fluff Analytics adds the No Fluff tracking script to every page of your site.
 * No cookies, nothing stored in the visitor's browser
 * Pageviews, referrers and Core Web Vitals from real visitors
 * Optional goals: successful form submissions (Contact Form 7, WPForms, Gravity Forms, Elementor) and WooCommerce orders
+* Shop revenue in the dashboard, signed with a secret so nobody else can report sales for your site
 * Your own logged-in editors are not counted
 * Works with common caching and optimisation plugins (WP Rocket, Autoptimize, LiteSpeed Cache, SiteGround Optimizer, Cloudflare Rocket Loader)
 * Adds a suggested section to your privacy policy guide
 
 = External service =
 
-This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order total and currency. No cookies are set. The IP address and browser identifier are used only to form a pseudonymous value that changes daily; the IP address is not stored.
+This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency. No cookies are set. The IP address and browser identifier are used only to form a pseudonymous value that changes daily; the IP address is not stored.
 
 Service: https://nofluff.agency
 
@@ -45,7 +46,19 @@ Visits of logged-in administrators, editors and authors are not counted by defau
 
 In the dashboard, add a goal of type "Custom event" named `form_submit` (or `purchase` for WooCommerce orders).
 
+= Where does the order secret come from? =
+
+From your site's page in the dashboard, next to the site ID. It is only needed if you want order totals counted as revenue: the plugin signs each order with it on your server, so nobody can report made-up sales for your site. Orders are still counted as goals without it. If you create a new secret in the dashboard, paste it here as well — orders do not count in between.
+
+= An order is missing from the revenue =
+
+An order only counts as revenue if it was signed: check that the order secret here matches the one in the dashboard. Orders in a currency other than the site's own are counted as orders but not added to the revenue, single orders above 10,000 are not counted, and the same order number counts once. Revenue is the order total at checkout; refunds and cancellations are not subtracted.
+
 == Changelog ==
+
+= 1.1.0 =
+* WooCommerce orders now also send the order number and, if the order secret is set, a signature, so the dashboard can show revenue.
+* New setting: order secret.
 
 = 1.0.0 =
 * First release.
