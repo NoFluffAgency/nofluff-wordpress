@@ -60,8 +60,21 @@ function nofluff_analytics_sanitize( $input ) {
 		$id = nofluff_analytics_settings()['tracking_id'];
 	}
 
+	$raw_secret = isset( $input['ingest_secret'] ) ? strtolower( trim( wp_unslash( (string) $input['ingest_secret'] ) ) ) : '';
+	$secret     = preg_match( '/^[0-9a-f]{64}$/', $raw_secret ) ? $raw_secret : '';
+
+	if ( '' !== $raw_secret && '' === $secret ) {
+		add_settings_error(
+			NOFLUFF_ANALYTICS_OPTION,
+			'invalid_ingest_secret',
+			__( 'That is not a valid order secret. Copy the 64-character secret shown next to the site ID in your No Fluff dashboard.', 'nofluff-analytics' )
+		);
+		$secret = nofluff_analytics_settings()['ingest_secret'];
+	}
+
 	return array(
 		'tracking_id'     => $id,
+		'ingest_secret'   => $secret,
 		'exclude_editors' => ! empty( $input['exclude_editors'] ),
 		'track_forms'     => ! empty( $input['track_forms'] ),
 		'track_orders'    => ! empty( $input['track_orders'] ),
@@ -101,6 +114,13 @@ function nofluff_analytics_render_page() {
 					</td>
 				</tr>
 				<tr>
+					<th scope="row"><label for="nofluff-ingest-secret"><?php esc_html_e( 'Order secret', 'nofluff-analytics' ); ?></label></th>
+					<td>
+						<input type="password" id="nofluff-ingest-secret" class="regular-text code" name="<?php echo esc_attr( $name ); ?>[ingest_secret]" value="<?php echo esc_attr( $settings['ingest_secret'] ); ?>" autocomplete="off" spellcheck="false" />
+						<p class="description"><?php esc_html_e( 'Needed for WooCommerce orders and revenue in the dashboard: it signs each order, so nobody else can report sales for this site. Without it, orders only count as goal conversions. Copy it from the dashboard next to the site ID. Creating a new one there stops orders from counting until you paste it here.', 'nofluff-analytics' ); ?></p>
+					</td>
+				</tr>
+				<tr>
 					<th scope="row"><?php esc_html_e( 'Your own visits', 'nofluff-analytics' ); ?></th>
 					<td>
 						<label>
@@ -119,7 +139,7 @@ function nofluff_analytics_render_page() {
 							</label><br />
 							<label>
 								<input type="checkbox" name="<?php echo esc_attr( $name ); ?>[track_orders]" value="1" <?php checked( $settings['track_orders'] ); ?> />
-								<?php esc_html_e( 'Report WooCommerce orders as the event "purchase" (order total and currency only)', 'nofluff-analytics' ); ?>
+								<?php esc_html_e( 'Report WooCommerce orders as the event "purchase" (order number, total and currency)', 'nofluff-analytics' ); ?>
 							</label>
 							<p class="description"><?php esc_html_e( 'To count them as conversions, add a goal of type "Custom event" with that name in the dashboard. Nothing a visitor types into a form is sent.', 'nofluff-analytics' ); ?></p>
 						</fieldset>
@@ -189,8 +209,15 @@ function nofluff_analytics_privacy_content() {
 	if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
 		return;
 	}
-	$content = '<p>' . __( 'This website uses No Fluff Analytics, a cookieless web analytics service, to understand how the site is used and to measure its speed.', 'nofluff-analytics' ) . '</p>'
-		. '<p>' . __( 'No cookies are set and nothing is stored in your browser. When you open a page, the address of the page, the referring page, your browser language, the screen width and loading-time measurements are sent to No Fluff. Your IP address and browser identifier are used only to form a pseudonymous value that changes every day and cannot be traced back to you; the IP address itself is not stored.', 'nofluff-analytics' ) . '</p>'
-		. '<p>' . __( 'Legal basis: our legitimate interest in analysing and improving this website (Art. 6(1)(f) GDPR). The data is processed on servers in the EU on our behalf by No Fluff.', 'nofluff-analytics' ) . '</p>';
+	$settings = nofluff_analytics_settings();
+	$content  = '<p>' . __( 'This website uses No Fluff Analytics, a cookieless web analytics service, to understand how the site is used and to measure its speed.', 'nofluff-analytics' ) . '</p>'
+		. '<p>' . __( 'No cookies are set and nothing is stored in your browser. When you open a page, the address of the page, the referring page, your browser language, the screen width and loading-time measurements are sent to No Fluff. Your IP address and browser identifier are used only to form a pseudonymous value that changes every day and cannot be traced back to you; the IP address itself is not stored.', 'nofluff-analytics' ) . '</p>';
+
+	if ( $settings['track_orders'] && function_exists( 'wc_get_order' ) ) {
+		$content .= '<p>' . __( 'If you place an order, the order number, the order total and the currency are sent to No Fluff so that sales can be counted. Your name, address, payment details and the items you bought are not sent.', 'nofluff-analytics' ) . '</p>';
+	}
+
+	$content .= '<p>' . __( 'Legal basis: our legitimate interest in analysing and improving this website (Art. 6(1)(f) GDPR). The data is processed on servers in the EU on our behalf by No Fluff.', 'nofluff-analytics' ) . '</p>';
+
 	wp_add_privacy_policy_content( __( 'No Fluff Analytics', 'nofluff-analytics' ), wp_kses_post( wpautop( $content, false ) ) );
 }

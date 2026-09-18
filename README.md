@@ -14,9 +14,10 @@ the site ID from the dashboard.
 | Setting | Default | Effect |
 |---|---|---|
 | Site ID | – | Adds `<script defer src="https://app.nofluff.agency/nf.js" data-site="…">` to the head |
+| Order secret | – | Signs WooCommerce orders so the dashboard counts them as orders and revenue; without it they only count as goal conversions |
 | Do not count logged-in editors | on | Users with `edit_posts` are not tracked |
 | Form submissions | on | `form_submit` event on success in Contact Form 7, WPForms, Gravity Forms, Elementor Pro (plugin + form id only) |
-| WooCommerce orders | on | One `purchase` event per order (total + currency only) |
+| WooCommerce orders | on | One `purchase` event per order (order number, total, currency, and the signature when a secret is set); none for failed or cancelled payments or outside the `production` environment type |
 
 Also: exclusion attributes and filters for WP Rocket, Autoptimize, LiteSpeed
 Cache, SiteGround Optimizer, NitroPack and Cloudflare Rocket Loader; a

@@ -3,7 +3,7 @@
  * Plugin Name:       No Fluff Analytics
  * Plugin URI:        https://github.com/NoFluffAgency/nofluff-wordpress
  * Description:       Connects this site to the No Fluff dashboard: adds the cookieless tracking script to every page and can report form submissions and WooCommerce orders as goals.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 6.3
  * Requires PHP:      7.4
  * Author:            No Fluff
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NOFLUFF_ANALYTICS_VERSION', '1.0.0' );
+define( 'NOFLUFF_ANALYTICS_VERSION', '1.1.0' );
 define( 'NOFLUFF_ANALYTICS_FILE', __FILE__ );
 define( 'NOFLUFF_ANALYTICS_OPTION', 'nofluff_analytics' );
 
@@ -38,7 +38,7 @@ require_once __DIR__ . '/includes/updater.php';
 /**
  * Settings with defaults. Stored as one option.
  *
- * @return array{tracking_id: string, exclude_editors: bool, track_forms: bool, track_orders: bool}
+ * @return array{tracking_id: string, ingest_secret: string, exclude_editors: bool, track_forms: bool, track_orders: bool}
  */
 function nofluff_analytics_settings() {
 	$saved = get_option( NOFLUFF_ANALYTICS_OPTION, array() );
@@ -46,6 +46,7 @@ function nofluff_analytics_settings() {
 		is_array( $saved ) ? $saved : array(),
 		array(
 			'tracking_id'     => '',
+			'ingest_secret'   => '',
 			'exclude_editors' => true,
 			'track_forms'     => true,
 			'track_orders'    => true,
