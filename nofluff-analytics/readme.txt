@@ -25,9 +25,9 @@ No Fluff Analytics adds the No Fluff tracking script to every page of your site.
 
 = External service =
 
-This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency, plus, if an order secret is set, a signature of those three values computed on your server (the secret itself is never sent). The tracking script sets no cookies and stores nothing in the browser. The IP address and browser identifier are used only to form a pseudonymous value that changes daily; the IP address is not stored.
+This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency, plus, if an order secret is set, a signature of those three values computed on your server (the secret itself is never sent). The tracking script sets no cookies and stores nothing in the browser. The IP address and browser identifier are used to form a pseudonymous value that changes daily; only the device type, the browser and operating system family and the country are stored, not the IP address.
 
-The plugin does not load the optional identity snippet (nf-id.js, from the same address). If you place it in your consent tool, it stores one random identifier in the visitor's browser (local storage, up to 400 days) once the visitor agrees, and sends nothing itself; the tracking script then adds that identifier to pageviews and goal events. Data about individual visits is deleted 14 months after the end of the month in which it was collected.
+The plugin does not load the optional identity snippet (nf-id.js, from the same address). If you place it in your consent tool, it stores one random identifier in the visitor's browser (local storage key nf_id, first party, no expiry; the value is renewed after 400 days) once the visitor agrees, and sends nothing itself; the tracking script then adds that identifier to pageviews and goal events. Data about individual visits is deleted 14 months after the end of the month in which it was collected.
 
 Service: https://nofluff.agency
 
@@ -73,6 +73,7 @@ An order only counts as an order and as revenue if it was signed: check that the
 * Settings → No Fluff shows the optional identity snippet to place in the statistics category of your consent tool, for campaigns across visits. The plugin never loads it itself.
 * New setting "I placed the identity snippet in my consent tool": it only switches the suggested privacy policy text to the version that covers the identifier, the link to earlier pages of the same visit and withdrawal.
 * The suggested privacy policy text now says how long visit data is kept and no longer calls the service cookieless; nor do the plugin's descriptions.
+* The suggested privacy policy text names the stored key, says it stays until the visitor deletes the site's data, and lists the device type, browser, operating system and country stored with each page.
 
 = 1.1.0 =
 * WooCommerce orders now also send the order number and, if the order secret is set, a signature, so the dashboard can show orders and revenue.
