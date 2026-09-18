@@ -1,8 +1,8 @@
 # No Fluff Analytics for WordPress
 
 Connects a WordPress site to the [No Fluff dashboard](https://app.nofluff.agency):
-adds the tracking script (it sets no cookies and stores nothing in the
-browser), reports form submissions and WooCommerce orders as goal events,
+adds the tracking script (it stores nothing in the browser and reads
+nothing stored there), reports form submissions and WooCommerce orders as goal events,
 keeps logged-in editors out of the numbers, and survives the common
 caching and optimisation plugins.
 
@@ -19,7 +19,7 @@ the site ID from the dashboard.
 | Do not count logged-in editors | on | Users with `edit_posts` are not tracked |
 | Form submissions | on | `form_submit` event on success in Contact Form 7, WPForms, Gravity Forms, Elementor Pro (plugin + form id only) |
 | WooCommerce orders | on | One `purchase` event per order (order number, total, currency, and the signature when a secret is set); none for failed or cancelled payments or outside the `production` environment type |
-| I placed the identity snippet in my consent tool | off | Only switches the suggested privacy policy text to the version for the identity snippet. The settings screen shows `<script defer src="https://app.nofluff.agency/nf-id.js"></script>` to copy into the statistics category of the site's consent tool; the plugin never loads it, because it cannot know whether a visitor agreed |
+| I placed the identity snippet in my consent tool | off | Only switches the suggested privacy policy text to the version for the identity snippet. The settings screen shows `<script defer src="https://app.nofluff.agency/nf-id.js"></script>` to copy into the statistics category of the site's consent tool; the plugin never loads it, because it cannot know whether a visitor agreed. The snippet stores one random identifier and hands it to the tracking script on the same page with `nf("identify", id)`; the plugin's queue stub in the head takes the call if the tracking script has not loaded yet |
 
 Also: exclusion attributes and filters for WP Rocket, Autoptimize, LiteSpeed
 Cache, SiteGround Optimizer, NitroPack and Cloudflare Rocket Loader; a
