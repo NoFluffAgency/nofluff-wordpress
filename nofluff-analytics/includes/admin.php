@@ -117,7 +117,7 @@ function nofluff_analytics_render_page() {
 					<th scope="row"><label for="nofluff-ingest-secret"><?php esc_html_e( 'Order secret', 'nofluff-analytics' ); ?></label></th>
 					<td>
 						<input type="password" id="nofluff-ingest-secret" class="regular-text code" name="<?php echo esc_attr( $name ); ?>[ingest_secret]" value="<?php echo esc_attr( $settings['ingest_secret'] ); ?>" autocomplete="off" spellcheck="false" />
-						<p class="description"><?php esc_html_e( 'Only needed for WooCommerce revenue: it signs each order, so nobody else can report sales for this site. Copy it from the dashboard next to the site ID. Creating a new one there stops orders from counting until you paste it here.', 'nofluff-analytics' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Needed for WooCommerce orders and revenue in the dashboard: it signs each order, so nobody else can report sales for this site. Without it, orders only count as goal conversions. Copy it from the dashboard next to the site ID. Creating a new one there stops orders from counting until you paste it here.', 'nofluff-analytics' ); ?></p>
 					</td>
 				</tr>
 				<tr>

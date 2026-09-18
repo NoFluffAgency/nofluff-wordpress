@@ -117,10 +117,14 @@ add_action( 'woocommerce_thankyou', 'nofluff_analytics_track_order', 10, 1 );
  * One "purchase" event per WooCommerce order, on the order-received page.
  * Only the order number, total and currency are sent, never customer data.
  *
- * The dashboard counts the money only when the order carries a signature
- * made with the site's order secret, so a stranger with a browser cannot
- * inflate the revenue. Without a secret the event is still sent and still
- * counts as a goal; the revenue is not counted.
+ * The dashboard counts an order and its money only when the order carries
+ * a signature made with the site's order secret, so a stranger with a
+ * browser cannot report an order this shop never took. The signature does
+ * not make an order paid: revenue is the total at checkout, so an order
+ * still awaiting payment (bank transfer, a gateway that confirms later) is
+ * signed like any other. Failed and cancelled payments are not sent.
+ * Without a secret the event is still sent and counts only as a goal
+ * conversion.
  *
  * @param int $order_id Order id.
  */
@@ -129,9 +133,17 @@ function nofluff_analytics_track_order( $order_id ) {
 	if ( ! $settings['track_orders'] || ! nofluff_analytics_should_track() || ! function_exists( 'wc_get_order' ) ) {
 		return;
 	}
+	// Order numbers are only unique within one shop database: a staging copy
+	// shares the site ID and secret but would use up numbers the live shop
+	// still needs, and the dashboard keeps only the first order per number.
+	if ( 'production' !== wp_get_environment_type() ) {
+		return;
+	}
 	$order = wc_get_order( $order_id );
+	// WooCommerce shows this page for a declined or cancelled payment too.
+	// Returning before the order is marked lets a successful retry report it.
 	// A reload of the thank-you page must not count the order twice.
-	if ( ! $order || $order->get_meta( '_nofluff_analytics_tracked' ) ) {
+	if ( ! $order || $order->has_status( array( 'failed', 'cancelled' ) ) || $order->get_meta( '_nofluff_analytics_tracked' ) ) {
 		return;
 	}
 	$order->update_meta_data( '_nofluff_analytics_tracked', time() );
@@ -155,14 +167,28 @@ function nofluff_analytics_track_order( $order_id ) {
 		$props['sig'] = nofluff_analytics_order_signature(
 			$settings['ingest_secret'],
 			$props['order_id'],
-			(int) round( $props['value'] * 100 ),
+			nofluff_analytics_order_cents( $props['value'] ),
 			$props['currency']
 		);
 	}
 
 	wp_register_script( 'nofluff-analytics-order', false, array( 'nofluff-analytics-queue' ), NOFLUFF_ANALYTICS_VERSION, true );
 	wp_enqueue_script( 'nofluff-analytics-order' );
-	wp_add_inline_script( 'nofluff-analytics-order', 'window.nf("event","purchase",' . wp_json_encode( $props ) . ');' );
+	wp_add_inline_script( 'nofluff-analytics-order', 'window.nf("event","purchase",' . wp_json_encode( $props, JSON_HEX_TAG | JSON_HEX_AMP ) . ');' );
+}
+
+/**
+ * An order total in whole cents, rounded exactly as the dashboard's
+ * Math.round( value * 100 ) does. PHP's round() pre-rounds (up to 8.3) and
+ * would turn 16.025 into 1603 cents where JavaScript gets 1602, and the
+ * signature would no longer match. For totals of half a cent and more,
+ * floor( x + 0.5 ) is bit for bit the same as Math.round( x ).
+ *
+ * @param float $value Order total.
+ * @return int
+ */
+function nofluff_analytics_order_cents( $value ) {
+	return (int) floor( (float) $value * 100 + 0.5 );
 }
 
 /**

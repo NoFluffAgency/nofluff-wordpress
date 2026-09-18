@@ -20,7 +20,7 @@ return array(
 		'Paste the site ID from your No Fluff dashboard (site page → Setup). Pasting the whole snippet works too.' => 'Fügen Sie die Website-ID aus Ihrem No Fluff Dashboard ein (Website-Seite → Setup). Das komplette Snippet funktioniert auch.',
 		'Site ID' => 'Website-ID',
 		'Order secret' => 'Bestell-Schlüssel',
-		'Only needed for WooCommerce revenue: it signs each order, so nobody else can report sales for this site. Copy it from the dashboard next to the site ID. Creating a new one there stops orders from counting until you paste it here.' => 'Nur für Umsätze aus WooCommerce nötig: Er signiert jede Bestellung, damit niemand sonst Verkäufe für diese Website melden kann. Kopieren Sie ihn im Dashboard neben der Website-ID. Wird dort ein neuer erzeugt, zählen Bestellungen erst wieder, wenn Sie ihn hier einfügen.',
+		'Needed for WooCommerce orders and revenue in the dashboard: it signs each order, so nobody else can report sales for this site. Without it, orders only count as goal conversions. Copy it from the dashboard next to the site ID. Creating a new one there stops orders from counting until you paste it here.' => 'Nötig, damit das Dashboard Bestellungen und Umsatz aus WooCommerce zählt: Er signiert jede Bestellung, damit niemand sonst Verkäufe für diese Website melden kann. Ohne ihn zählen Bestellungen nur als Abschlüsse. Kopieren Sie ihn im Dashboard neben der Website-ID. Wird dort ein neuer erzeugt, zählen Bestellungen erst wieder, wenn Sie ihn hier einfügen.',
 		'Your own visits' => 'Eigene Besuche',
 		'Do not count logged-in users who can edit content (administrators, editors, authors)' => 'Angemeldete Nutzer mit Bearbeitungsrechten nicht zählen (Administratoren, Redakteure, Autoren)',
 		'Goals' => 'Ziele',
