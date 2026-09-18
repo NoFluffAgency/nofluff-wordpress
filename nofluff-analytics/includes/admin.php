@@ -73,11 +73,12 @@ function nofluff_analytics_sanitize( $input ) {
 	}
 
 	return array(
-		'tracking_id'     => $id,
-		'ingest_secret'   => $secret,
-		'exclude_editors' => ! empty( $input['exclude_editors'] ),
-		'track_forms'     => ! empty( $input['track_forms'] ),
-		'track_orders'    => ! empty( $input['track_orders'] ),
+		'tracking_id'      => $id,
+		'ingest_secret'    => $secret,
+		'exclude_editors'  => ! empty( $input['exclude_editors'] ),
+		'track_forms'      => ! empty( $input['track_forms'] ),
+		'track_orders'     => ! empty( $input['track_orders'] ),
+		'identity_snippet' => ! empty( $input['identity_snippet'] ),
 	);
 }
 
@@ -145,6 +146,21 @@ function nofluff_analytics_render_page() {
 						</fieldset>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row"><label for="nofluff-identity-snippet"><?php esc_html_e( 'Identity snippet (optional)', 'nofluff-analytics' ); ?></label></th>
+					<td>
+						<p><?php esc_html_e( 'Links enquiries and orders on later visits to the campaign a visitor came from, for visitors who agree to statistics in your consent tool. This plugin never loads it itself, because it cannot know whether a visitor agreed.', 'nofluff-analytics' ); ?></p>
+						<p class="description"><?php esc_html_e( 'No Fluff can set this up for you. If you do it yourself, paste the snippet below into the statistics category of your consent tool. The tracking script this plugin adds must stay outside the consent tool and keep loading for everyone, or visits before consent are not counted. The snippet stores one random identifier in the visitor\'s browser for up to 400 days and sends nothing by itself. Leaving it out changes nothing about the anonymous statistics.', 'nofluff-analytics' ); ?></p>
+						<input type="text" id="nofluff-identity-snippet" class="large-text code" readonly value="<?php echo esc_attr( '<script defer src="' . esc_url( nofluff_analytics_host() . '/nf-id.js' ) . '"></script>' ); ?>" />
+						<p>
+							<label>
+								<input type="checkbox" name="<?php echo esc_attr( $name ); ?>[identity_snippet]" value="1" <?php checked( $settings['identity_snippet'] ); ?> />
+								<?php esc_html_e( 'I placed the identity snippet in my consent tool', 'nofluff-analytics' ); ?>
+							</label>
+						</p>
+						<p class="description"><?php esc_html_e( 'Only switches the suggested text for your privacy policy (Settings → Privacy) to the version that covers the identifier. Tracking is the same either way.', 'nofluff-analytics' ); ?></p>
+					</td>
+				</tr>
 			</table>
 			<?php submit_button(); ?>
 		</form>
@@ -153,7 +169,7 @@ function nofluff_analytics_render_page() {
 			<?php
 			printf(
 				/* translators: %s: plugin version */
-				esc_html__( 'Version %s. The tracker sets no cookies and stores nothing in the visitor\'s browser.', 'nofluff-analytics' ),
+				esc_html__( 'Version %s. The tracking script this plugin adds sets no cookies and stores nothing in the visitor\'s browser.', 'nofluff-analytics' ),
 				esc_html( NOFLUFF_ANALYTICS_VERSION )
 			);
 			?>
@@ -203,21 +219,30 @@ add_action( 'admin_init', 'nofluff_analytics_privacy_content' );
 
 /**
  * Suggested text for Settings → Privacy → Policy Guide. A starting point
- * for the site owner, not legal advice.
+ * for the site owner, not legal advice. The consent part is added only
+ * once the owner says the identity snippet is in their consent tool.
  */
 function nofluff_analytics_privacy_content() {
 	if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
 		return;
 	}
 	$settings = nofluff_analytics_settings();
-	$content  = '<p>' . __( 'This website uses No Fluff Analytics, a cookieless web analytics service, to understand how the site is used and to measure its speed.', 'nofluff-analytics' ) . '</p>'
-		. '<p>' . __( 'No cookies are set and nothing is stored in your browser. When you open a page, the address of the page, the referring page, your browser language, the screen width and loading-time measurements are sent to No Fluff. Your IP address and browser identifier are used only to form a pseudonymous value that changes every day and cannot be traced back to you; the IP address itself is not stored.', 'nofluff-analytics' ) . '</p>';
+	$content  = '<p>' . __( 'This website uses No Fluff Analytics to understand how the site is used and to measure its speed.', 'nofluff-analytics' ) . '</p>'
+		. '<p>' . __( 'For the basic statistics, no cookies are set and nothing is stored in your browser. When you open a page, the address of the page, the referring page, your browser language, the screen width and loading-time measurements are sent to No Fluff. Your IP address and browser identifier are used only to form a pseudonymous value that changes every day and cannot be traced back to you; the IP address itself is not stored.', 'nofluff-analytics' ) . '</p>';
 
 	if ( $settings['track_orders'] && function_exists( 'wc_get_order' ) ) {
 		$content .= '<p>' . __( 'If you place an order, the order number, the order total and the currency are sent to No Fluff so that sales can be counted. Your name, address, payment details and the items you bought are not sent.', 'nofluff-analytics' ) . '</p>';
 	}
 
-	$content .= '<p>' . __( 'Legal basis: our legitimate interest in analysing and improving this website (Art. 6(1)(f) GDPR). The data is processed on servers in the EU on our behalf by No Fluff.', 'nofluff-analytics' ) . '</p>';
+	$content .= '<p>' . __( 'Legal basis: our legitimate interest in analysing and improving this website (Art. 6(1)(f) GDPR).', 'nofluff-analytics' ) . '</p>';
+
+	if ( $settings['identity_snippet'] ) {
+		$content .= '<p>' . __( 'If you agree to statistics in our consent banner, a random identifier is stored in your browser\'s local storage (not a cookie) for up to 400 days. It contains nothing about you and is used only on this website. It is sent to No Fluff with the pages you open, your enquiries and your orders and stored there with them. This lets us see that several visits come from the same browser, which campaign link (for example an ad or a newsletter) brought you here, and whether a visit ended in an enquiry or an order.', 'nofluff-analytics' ) . '</p>'
+			. '<p>' . __( 'If you agree during a visit, the pages you opened earlier in that visit are linked to the identifier as well. No Fluff makes this link on its servers from your IP address and browser identifier, neither of which is stored.', 'nofluff-analytics' ) . '</p>'
+			. '<p>' . __( 'Legal basis for the identifier: your consent (Art. 6(1)(a) GDPR, § 25(1) TDDDG). You can withdraw it at any time in the consent settings of this website; the identifier is then no longer sent, at the latest one day later. Withdrawal does not affect the lawfulness of processing before it. Deleting this website\'s data in your browser removes the identifier.', 'nofluff-analytics' ) . '</p>';
+	}
+
+	$content .= '<p>' . __( 'No Fluff processes the data on our behalf on servers in the EU. Data about individual visits is deleted 14 months after the end of the month in which it was collected; only aggregated numbers, such as visits per day, are kept.', 'nofluff-analytics' ) . '</p>';
 
 	wp_add_privacy_policy_content( __( 'No Fluff Analytics', 'nofluff-analytics' ), wp_kses_post( wpautop( $content, false ) ) );
 }
