@@ -4,7 +4,7 @@ Tags: analytics, statistics, privacy, core web vitals, campaigns
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,11 @@ First check that it was sent at all. Orders placed while logged in as an adminis
 An order only counts as an order and as revenue if it was signed: check that the order secret here matches the one in the dashboard. Orders in a currency other than the site's own are counted as orders but not added to the revenue, and single orders above 10,000 are not counted. The same order number counts once, so use one site ID per shop, and keep in mind that changing the order numbering later can reuse numbers that were already counted. Revenue is the order total at checkout, including orders still awaiting payment such as bank transfers; refunds and later cancellations are not subtracted.
 
 == Changelog ==
+
+= 1.3.0 =
+* Pages that do not exist (404) are reported as the event "nf_404", so the dashboard can show which addresses Google still sends visitors to.
+* Elementor Pro forms report the form's widget id instead of its name.
+* The suggested privacy policy text names what the tracking script now measures on a page: active time, scroll depth, the kind of contact link tapped (not its target) and form starts and sends (not what is entered).
 
 = 1.2.0 =
 * Settings → No Fluff shows the optional identity snippet to place in the statistics category of your consent tool, for campaigns across visits. The plugin never loads it itself.
