@@ -1,30 +1,33 @@
 === No Fluff Analytics ===
 Contributors: nofluff
-Tags: analytics, cookieless, privacy, core web vitals, statistics
+Tags: analytics, statistics, privacy, core web vitals, campaigns
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Connects your site to the No Fluff dashboard: cookieless visitor statistics, Core Web Vitals and goals, without code.
+Connects your site to the No Fluff dashboard: visitor statistics, campaigns, Core Web Vitals, goals and shop revenue, without code.
 
 == Description ==
 
 No Fluff Analytics adds the No Fluff tracking script to every page of your site. You need a No Fluff dashboard account; the site ID is on your site's page in the dashboard.
 
-* No cookies, nothing stored in the visitor's browser
+* By default the tracking script stores nothing in the visitor's browser and reads nothing stored there
 * Pageviews, referrers and Core Web Vitals from real visitors
 * Optional goals: successful form submissions (Contact Form 7, WPForms, Gravity Forms, Elementor) and WooCommerce orders
 * Shop orders and revenue in the dashboard, signed with a secret so nobody else can report sales for your site
+* Optional, for visitors who consent: campaigns linked to enquiries and orders on later visits, even after a visit of a single page, through an identity snippet you place in your consent tool (the plugin never loads it itself)
 * Your own logged-in editors are not counted
 * Works with common caching and optimisation plugins (WP Rocket, Autoptimize, LiteSpeed Cache, SiteGround Optimizer, Cloudflare Rocket Loader)
-* Adds a suggested section to your privacy policy guide
+* Adds a suggested section to your privacy policy guide, with or without the identity snippet
 
 = External service =
 
-This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency, plus, if an order secret is set, a signature of those three values computed on your server (the secret itself is never sent). No cookies are set. The IP address and browser identifier are used only to form a pseudonymous value that changes daily; the IP address is not stored.
+This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency, plus, if an order secret is set, a signature of those three values computed on your server (the secret itself is never sent). The tracking script stores nothing in the browser and reads nothing stored there. The IP address and browser identifier are used to form a pseudonymous value that changes daily; only the device type, the browser and operating system family and the country are stored, not the IP address.
+
+The plugin does not load the optional identity snippet (nf-id.js, from the same address). If you place it in your consent tool, it stores one random identifier in the visitor's browser (local storage key nf_id, first party, no expiry; the value is renewed after 400 days) once the visitor agrees, hands it to the tracking script on the same page, and sends nothing itself. The tracking script adds the identifier to the page's pageview, if that has not been sent yet, and to later goal events on that page; if the pageview was already sent, it sends the identifier once for that page, with the page address, so the current visit is linked from the moment of consent. From the next page after a withdrawal, the identifier is no longer read or sent; the visit in which it happens stays linked until it ends (after 30 minutes without activity). Data about individual visits is deleted 14 months after the end of the month in which it was collected.
 
 Service: https://nofluff.agency
 
@@ -42,6 +45,14 @@ For the US region, define `NOFLUFF_ANALYTICS_HOST` in wp-config.php with the das
 
 Visits of logged-in administrators, editors and authors are not counted by default. Check in a private browser window. If the site sends a Content-Security-Policy header, it must allow the dashboard address in script-src and connect-src.
 
+= How do I get campaign and revenue data? =
+
+Campaigns need nothing extra within one visit: add utm_source, utm_medium and utm_campaign to the links you share; Google and Microsoft ad clicks are recognised automatically. Revenue needs the order secret (see below). To link a campaign to an enquiry or order on a later visit, the visitor has to agree to statistics in your consent tool and the identity snippet from Settings → No Fluff has to run there. No Fluff can place it for you. If you do it yourself, put it in the statistics category of your consent tool, then tick "I placed the identity snippet in my consent tool" so the suggested privacy policy text covers it.
+
+= Does the plugin handle consent? =
+
+No. It never loads the identity snippet itself, because it cannot know whether a visitor agreed; that is your consent tool's job. The tracking script the plugin adds must stay outside the consent tool: if the consent tool blocks it, visits before consent are not counted and your numbers drop.
+
 = How do form submissions become goals? =
 
 In the dashboard, add a goal of type "Custom event" named `form_submit` (or `purchase` for WooCommerce orders).
@@ -58,6 +69,13 @@ An order only counts as an order and as revenue if it was signed: check that the
 
 == Changelog ==
 
+= 1.2.0 =
+* Settings → No Fluff shows the optional identity snippet to place in the statistics category of your consent tool, for campaigns across visits. The plugin never loads it itself.
+* The identity snippet hands its identifier to the tracking script on the same page, so a visit of a single page is linked to its campaign as soon as the visitor agrees. The tracking script itself still stores nothing in the browser and reads nothing stored there.
+* New setting "I placed the identity snippet in my consent tool": it only switches the suggested privacy policy text to the version that covers the identifier, the link to the current visit and its earlier pages, and that a withdrawal takes effect from the next page while the visit in which it happens stays linked until it ends.
+* The suggested privacy policy text now says how long visit data is kept and no longer calls the service cookieless; nor do the plugin's descriptions.
+* The suggested privacy policy text names the stored key, says it stays until the visitor deletes the site's data, and lists the device type, browser, operating system and country stored with each page.
+
 = 1.1.0 =
 * WooCommerce orders now also send the order number and, if the order secret is set, a signature, so the dashboard can show orders and revenue.
 * New setting: order secret.
@@ -66,3 +84,8 @@ An order only counts as an order and as revenue if it was signed: check that the
 
 = 1.0.0 =
 * First release.
+
+== Upgrade Notice ==
+
+= 1.2.0 =
+Shows the optional identity snippet for your consent tool. Nothing changes on your site until you place it. The suggested privacy policy text changed: check Settings → Privacy.
