@@ -25,7 +25,7 @@ No Fluff Analytics adds the No Fluff tracking script to every page of your site.
 
 = External service =
 
-This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency, plus, if an order secret is set, a signature of those three values computed on your server (the secret itself is never sent). The tracking script stores nothing in the browser and reads nothing stored there. The IP address and browser identifier are used to form a pseudonymous value that changes daily; only the device type, the browser and operating system family and the country are stored, not the IP address.
+This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency, plus, if an order secret is set, a signature of those three values computed on your server (the secret itself is never sent). The tracking script stores nothing in the browser and reads nothing stored there. The IP address and browser identifier are used to form a pseudonymous value that changes daily; only the device type, the browser and operating system family and the country are stored, not the IP address. Requests to the dashboard pass through Cloudflare (Cloudflare, Inc., USA), which No Fluff uses as a proxy in front of it: https://www.cloudflare.com/privacypolicy/
 
 The plugin does not load the optional identity snippet (nf-id.js, from the same address). If you place it in your consent tool, it stores one random identifier in the visitor's browser (local storage key nf_id, first party, no expiry; the value is renewed after 400 days) once the visitor agrees, hands it to the tracking script on the same page, and sends nothing itself. The tracking script adds the identifier to the page's pageview, if that has not been sent yet, and to later goal events on that page; if the pageview was already sent, it sends the identifier once for that page, with the page address, so the current visit is linked from the moment of consent. From the next page after a withdrawal, the identifier is no longer read or sent; the visit in which it happens stays linked until it ends (after 30 minutes without activity). Data about individual visits is deleted 14 months after the end of the month in which it was collected.
 
@@ -73,6 +73,10 @@ An order only counts as an order and as revenue if it was signed: check that the
 * Pages that do not exist (404) are reported as the event "nf_404", so the dashboard can show which addresses Google still sends visitors to.
 * Elementor Pro forms report the form's widget id instead of its name.
 * The suggested privacy policy text names what the tracking script now measures on a page: active time, scroll depth, the kind of contact link tapped (not its target) and form starts and sends (not what is entered).
+* The suggested privacy policy text gives the legal basis for allowing Cloudflare its own use of the traffic data: Art. 6(1)(f) GDPR, the security of No Fluff's service and of Cloudflare's network.
+
+= 1.2.1 =
+* The suggested privacy policy text names Cloudflare, through whose network requests reach No Fluff's servers in the EU: what it processes, that this can happen outside the EU, and the basis for transfers to the USA and other countries.
 
 = 1.2.0 =
 * Settings → No Fluff shows the optional identity snippet to place in the statistics category of your consent tool, for campaigns across visits. The plugin never loads it itself.
@@ -91,6 +95,12 @@ An order only counts as an order and as revenue if it was signed: check that the
 * First release.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Reports 404 pages and the Elementor Pro form id. The suggested privacy policy text changed (what is measured on a page, the legal basis for Cloudflare's own use): check Settings → Privacy and update your privacy policy.
+
+= 1.2.1 =
+The suggested privacy policy text now names Cloudflare: check Settings → Privacy and update your privacy policy.
 
 = 1.2.0 =
 Shows the optional identity snippet for your consent tool. Nothing changes on your site until you place it. The suggested privacy policy text changed: check Settings → Privacy.
