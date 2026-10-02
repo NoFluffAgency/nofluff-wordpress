@@ -4,7 +4,7 @@ Tags: analytics, statistics, privacy, core web vitals, campaigns
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,7 +69,7 @@ An order only counts as an order and as revenue if it was signed: check that the
 
 == Changelog ==
 
-= 1.4.0 =
+= 1.4.1 =
 * Bricks Builder forms count as sent, with the form element's id, like the other form plugins.
 * The suggested privacy policy text for the identity snippet says which pages the identifier is linked to: the page on which the visitor agreed, including the campaign link that brought them there, and the pages after it. Pages opened earlier in that visit are not linked, and nothing stays linked after a withdrawal. The No Fluff dashboard released with it no longer links pages through the IP address and browser identifier.
 
@@ -100,7 +100,7 @@ An order only counts as an order and as revenue if it was signed: check that the
 
 == Upgrade Notice ==
 
-= 1.4.0 =
+= 1.4.1 =
 Bricks Builder forms now count as sent. Only with the identity snippet: the suggested privacy policy text changed (which pages the identifier is linked to; nothing stays linked after a withdrawal). Check Settings → Privacy and update your privacy policy.
 
 = 1.3.0 =

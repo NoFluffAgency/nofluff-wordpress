@@ -9,7 +9,7 @@ return array(
 	'domain'       => 'nofluff-analytics',
 	'plural-forms' => 'nplurals=2; plural=(n != 1);',
 	'language'     => 'de_DE',
-	'project-id-version' => 'No Fluff Analytics 1.4.0',
+	'project-id-version' => 'No Fluff Analytics 1.4.1',
 	'messages'     => array(
 		'No Fluff Analytics' => 'No Fluff Analytics',
 		'No Fluff' => 'No Fluff',
