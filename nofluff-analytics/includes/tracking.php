@@ -67,6 +67,12 @@ function nofluff_analytics_enqueue() {
 		'window.nf=window.nf||function(){(window.nf.q=window.nf.q||[]).push([].slice.call(arguments))};'
 	);
 
+	// A page that does not exist: the dashboard shows which addresses Google
+	// still sends visitors to. The event carries nothing but its name.
+	if ( is_404() ) {
+		wp_add_inline_script( 'nofluff-analytics-queue', 'window.nf("event","nf_404");' );
+	}
+
 	if ( $settings['track_forms'] ) {
 		wp_register_script( 'nofluff-analytics-forms', false, array( 'nofluff-analytics-queue' ), NOFLUFF_ANALYTICS_VERSION, true );
 		wp_enqueue_script( 'nofluff-analytics-forms' );
@@ -77,7 +83,9 @@ function nofluff_analytics_enqueue() {
 /**
  * Listens for successful submissions of the common form plugins and sends
  * one "form_submit" event with the plugin and form id. Nothing a visitor
- * typed is ever read.
+ * typed is ever read. The tracker adds the form's position on the page, the
+ * one it saw submitted last, so the dashboard can match the send to the
+ * form's starts and submit attempts.
  *
  * @return string
  */
@@ -91,6 +99,12 @@ function nofluff_analytics_forms_js() {
   document.addEventListener("wpcf7mailsent", function (e) {
     send("cf7", e.detail && e.detail.contactFormId);
   });
+  // Bricks Builder forms: Bricks' own form script dispatches this on the
+  // document after a send its server answered with success. The id is the
+  // form element's, which Bricks generates, never anything the owner typed.
+  document.addEventListener("bricks/form/success", function (e) {
+    send("bricks", e.detail && e.detail.elementId);
+  });
   if (window.jQuery) {
     var $ = window.jQuery;
     // WPForms (AJAX forms)
@@ -101,10 +115,12 @@ function nofluff_analytics_forms_js() {
     $(document).on("gform_confirmation_loaded", function (e, formId) {
       send("gravityforms", formId);
     });
-    // Elementor Pro forms
+    // Elementor Pro forms: the widget's id, never the form name, which the
+    // site owner types and could hold anything.
     $(document).on("submit_success", function (e) {
       var form = e.target && e.target.closest ? e.target.closest("form") : null;
-      send("elementor", form && form.getAttribute("name"));
+      var id = form && form.querySelector('input[name="form_id"]');
+      send("elementor", id && id.value);
     });
   }
 })();

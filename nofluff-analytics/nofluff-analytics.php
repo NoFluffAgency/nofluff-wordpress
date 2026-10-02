@@ -3,7 +3,7 @@
  * Plugin Name:       No Fluff Analytics
  * Plugin URI:        https://github.com/NoFluffAgency/nofluff-wordpress
  * Description:       Connects this site to the No Fluff dashboard: adds the tracking script to every page and can report form submissions and WooCommerce orders as goals.
- * Version:           1.2.1
+ * Version:           1.4.1
  * Requires at least: 6.3
  * Requires PHP:      7.4
  * Author:            No Fluff
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NOFLUFF_ANALYTICS_VERSION', '1.2.1' );
+define( 'NOFLUFF_ANALYTICS_VERSION', '1.4.1' );
 define( 'NOFLUFF_ANALYTICS_FILE', __FILE__ );
 define( 'NOFLUFF_ANALYTICS_OPTION', 'nofluff_analytics' );
 
