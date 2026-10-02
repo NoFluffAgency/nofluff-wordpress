@@ -4,7 +4,7 @@ Tags: analytics, statistics, privacy, core web vitals, campaigns
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,9 @@ An order only counts as an order and as revenue if it was signed: check that the
 
 == Changelog ==
 
+= 1.4.0 =
+* The suggested privacy policy text for the identity snippet says which pages the identifier is linked to: the page on which the visitor agreed, including the campaign link that brought them there, and the pages after it. Pages opened earlier in that visit are not linked, and nothing stays linked after a withdrawal. The No Fluff dashboard released with it no longer links pages through the IP address and browser identifier.
+
 = 1.3.0 =
 * Pages that do not exist (404) are reported as the event "nf_404", so the dashboard can show which addresses Google still sends visitors to.
 * Elementor Pro forms report the form's widget id instead of its name.
@@ -95,6 +98,9 @@ An order only counts as an order and as revenue if it was signed: check that the
 * First release.
 
 == Upgrade Notice ==
+
+= 1.4.0 =
+Only with the identity snippet: the suggested privacy policy text changed (which pages the identifier is linked to; nothing stays linked after a withdrawal). Check Settings → Privacy and update your privacy policy.
 
 = 1.3.0 =
 Reports 404 pages and the Elementor Pro form id. The suggested privacy policy text changed (what is measured on a page, the legal basis for Cloudflare's own use): check Settings → Privacy and update your privacy policy.
