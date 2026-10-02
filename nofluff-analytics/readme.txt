@@ -4,7 +4,7 @@ Tags: analytics, statistics, privacy, core web vitals, campaigns
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ No Fluff Analytics adds the No Fluff tracking script to every page of your site.
 
 * By default the tracking script stores nothing in the visitor's browser and reads nothing stored there
 * Pageviews, referrers and Core Web Vitals from real visitors
-* Optional goals: successful form submissions (Contact Form 7, WPForms, Gravity Forms, Elementor) and WooCommerce orders
+* Optional goals: successful form submissions (Contact Form 7, WPForms, Gravity Forms, Elementor, Bricks) and WooCommerce orders
 * Shop orders and revenue in the dashboard, signed with a secret so nobody else can report sales for your site
 * Optional, for visitors who consent: campaigns linked to enquiries and orders on later visits, even after a visit of a single page, through an identity snippet you place in your consent tool (the plugin never loads it itself)
 * Your own logged-in editors are not counted
@@ -27,7 +27,7 @@ No Fluff Analytics adds the No Fluff tracking script to every page of your site.
 
 This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency, plus, if an order secret is set, a signature of those three values computed on your server (the secret itself is never sent). The tracking script stores nothing in the browser and reads nothing stored there. The IP address and browser identifier are used to form a pseudonymous value that changes daily; only the device type, the browser and operating system family and the country are stored, not the IP address. Requests to the dashboard pass through Cloudflare (Cloudflare, Inc., USA), which No Fluff uses as a proxy in front of it: https://www.cloudflare.com/privacypolicy/
 
-The plugin does not load the optional identity snippet (nf-id.js, from the same address). If you place it in your consent tool, it stores one random identifier in the visitor's browser (local storage key nf_id, first party, no expiry; the value is renewed after 400 days) once the visitor agrees, hands it to the tracking script on the same page, and sends nothing itself. The tracking script adds the identifier to the page's pageview, if that has not been sent yet, and to later goal events on that page; if the pageview was already sent, it sends the identifier once for that page, with the page address, so the current visit is linked from the moment of consent. From the next page after a withdrawal, the identifier is no longer read or sent; the visit in which it happens stays linked until it ends (after 30 minutes without activity). Data about individual visits is deleted 14 months after the end of the month in which it was collected.
+The plugin does not load the optional identity snippet (nf-id.js, from the same address). If you place it in your consent tool, it stores one random identifier in the visitor's browser (local storage key nf_id, first party, no expiry; the value is renewed after 400 days) once the visitor agrees, hands it to the tracking script on the same page, and sends nothing itself. Every hit of the tracking script except speed measurements carries a random key for the page it came from, kept in the page's memory only and never stored. The tracking script adds the identifier to the page's pageview, if that has not been sent yet, and to later goal events on that page; if a hit of the page already went out without it, it sends the identifier once for that page, with the page address and its campaign parameters. The identifier is linked to that page, including the campaign link that brought the visitor there, and to the pages after it, never to pages opened earlier in the visit, and never through the IP address or browser identifier. From the next page after a withdrawal, the identifier is no longer read or sent, and nothing more is linked to it. Data about individual visits is deleted 14 months after the end of the month in which it was collected.
 
 Service: https://nofluff.agency
 
@@ -69,6 +69,10 @@ An order only counts as an order and as revenue if it was signed: check that the
 
 == Changelog ==
 
+= 1.4.1 =
+* Bricks Builder forms count as sent, with the form element's id, like the other form plugins.
+* The suggested privacy policy text for the identity snippet says which pages the identifier is linked to: the page on which the visitor agreed, including the campaign link that brought them there, and the pages after it. Pages opened earlier in that visit are not linked, and nothing stays linked after a withdrawal. The No Fluff dashboard released with it no longer links pages through the IP address and browser identifier.
+
 = 1.3.0 =
 * Pages that do not exist (404) are reported as the event "nf_404", so the dashboard can show which addresses Google still sends visitors to.
 * Elementor Pro forms report the form's widget id instead of its name.
@@ -95,6 +99,9 @@ An order only counts as an order and as revenue if it was signed: check that the
 * First release.
 
 == Upgrade Notice ==
+
+= 1.4.1 =
+Bricks Builder forms now count as sent. Only with the identity snippet: the suggested privacy policy text changed (which pages the identifier is linked to; nothing stays linked after a withdrawal). Check Settings → Privacy and update your privacy policy.
 
 = 1.3.0 =
 Reports 404 pages and the Elementor Pro form id. The suggested privacy policy text changed (what is measured on a page, the legal basis for Cloudflare's own use): check Settings → Privacy and update your privacy policy.
