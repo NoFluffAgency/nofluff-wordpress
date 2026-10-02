@@ -40,6 +40,10 @@ jobs:
           build-dir: nofluff-analytics
           # Self-updating from GitHub is intentional until the plugin is on WordPress.org.
           exclude-checks: plugin_updater
+          # This rule flags any string that contains "cloudflare.com". The suggested privacy text names Cloudflare's DPA
+          # and privacy policy by address (Art. 13(1)(f) GDPR: where the transfer safeguards can be obtained); the plugin
+          # loads nothing from Cloudflare. Enqueued remote scripts and styles stay checked (EnqueuedResourceOffloading).
+          ignore-codes: PluginCheck.CodeAnalysis.Offloading.OffloadedContent
 
   release:
     name: release zip

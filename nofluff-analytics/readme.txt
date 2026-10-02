@@ -4,7 +4,7 @@ Tags: analytics, statistics, privacy, core web vitals, campaigns
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,7 +25,7 @@ No Fluff Analytics adds the No Fluff tracking script to every page of your site.
 
 = External service =
 
-This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency, plus, if an order secret is set, a signature of those three values computed on your server (the secret itself is never sent). The tracking script stores nothing in the browser and reads nothing stored there. The IP address and browser identifier are used to form a pseudonymous value that changes daily; only the device type, the browser and operating system family and the country are stored, not the IP address.
+This plugin loads a script from, and sends usage data to, the No Fluff dashboard (by default https://app.nofluff.agency). Sent per pageview: page address, referring page, browser language, screen width, and loading-time measurements; for goals, the event name, the form plugin and form ID, or the order number, order total and currency, plus, if an order secret is set, a signature of those three values computed on your server (the secret itself is never sent). The tracking script stores nothing in the browser and reads nothing stored there. The IP address and browser identifier are used to form a pseudonymous value that changes daily; only the device type, the browser and operating system family and the country are stored, not the IP address. Requests to the dashboard pass through Cloudflare (Cloudflare, Inc., USA), which No Fluff uses as a proxy in front of it: https://www.cloudflare.com/privacypolicy/
 
 The plugin does not load the optional identity snippet (nf-id.js, from the same address). If you place it in your consent tool, it stores one random identifier in the visitor's browser (local storage key nf_id, first party, no expiry; the value is renewed after 400 days) once the visitor agrees, hands it to the tracking script on the same page, and sends nothing itself. The tracking script adds the identifier to the page's pageview, if that has not been sent yet, and to later goal events on that page; if the pageview was already sent, it sends the identifier once for that page, with the page address, so the current visit is linked from the moment of consent. From the next page after a withdrawal, the identifier is no longer read or sent; the visit in which it happens stays linked until it ends (after 30 minutes without activity). Data about individual visits is deleted 14 months after the end of the month in which it was collected.
 
@@ -69,6 +69,9 @@ An order only counts as an order and as revenue if it was signed: check that the
 
 == Changelog ==
 
+= 1.2.1 =
+* The suggested privacy policy text names Cloudflare, through whose network requests reach No Fluff's servers in the EU: what it processes, that this can happen outside the EU, and the basis for transfers to the USA and other countries.
+
 = 1.2.0 =
 * Settings → No Fluff shows the optional identity snippet to place in the statistics category of your consent tool, for campaigns across visits. The plugin never loads it itself.
 * The identity snippet hands its identifier to the tracking script on the same page, so a visit of a single page is linked to its campaign as soon as the visitor agrees. The tracking script itself still stores nothing in the browser and reads nothing stored there.
@@ -86,6 +89,9 @@ An order only counts as an order and as revenue if it was signed: check that the
 * First release.
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+The suggested privacy policy text now names Cloudflare: check Settings → Privacy and update your privacy policy.
 
 = 1.2.0 =
 Shows the optional identity snippet for your consent tool. Nothing changes on your site until you place it. The suggested privacy policy text changed: check Settings → Privacy.
