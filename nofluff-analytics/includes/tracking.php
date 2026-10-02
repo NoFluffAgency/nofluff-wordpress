@@ -99,6 +99,12 @@ function nofluff_analytics_forms_js() {
   document.addEventListener("wpcf7mailsent", function (e) {
     send("cf7", e.detail && e.detail.contactFormId);
   });
+  // Bricks Builder forms: Bricks' own form script dispatches this on the
+  // document after a send its server answered with success. The id is the
+  // form element's, which Bricks generates, never anything the owner typed.
+  document.addEventListener("bricks/form/success", function (e) {
+    send("bricks", e.detail && e.detail.elementId);
+  });
   if (window.jQuery) {
     var $ = window.jQuery;
     // WPForms (AJAX forms)

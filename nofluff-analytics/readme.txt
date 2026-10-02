@@ -16,7 +16,7 @@ No Fluff Analytics adds the No Fluff tracking script to every page of your site.
 
 * By default the tracking script stores nothing in the visitor's browser and reads nothing stored there
 * Pageviews, referrers and Core Web Vitals from real visitors
-* Optional goals: successful form submissions (Contact Form 7, WPForms, Gravity Forms, Elementor) and WooCommerce orders
+* Optional goals: successful form submissions (Contact Form 7, WPForms, Gravity Forms, Elementor, Bricks) and WooCommerce orders
 * Shop orders and revenue in the dashboard, signed with a secret so nobody else can report sales for your site
 * Optional, for visitors who consent: campaigns linked to enquiries and orders on later visits, even after a visit of a single page, through an identity snippet you place in your consent tool (the plugin never loads it itself)
 * Your own logged-in editors are not counted
@@ -70,6 +70,7 @@ An order only counts as an order and as revenue if it was signed: check that the
 == Changelog ==
 
 = 1.4.0 =
+* Bricks Builder forms count as sent, with the form element's id, like the other form plugins.
 * The suggested privacy policy text for the identity snippet says which pages the identifier is linked to: the page on which the visitor agreed, including the campaign link that brought them there, and the pages after it. Pages opened earlier in that visit are not linked, and nothing stays linked after a withdrawal. The No Fluff dashboard released with it no longer links pages through the IP address and browser identifier.
 
 = 1.3.0 =
@@ -100,7 +101,7 @@ An order only counts as an order and as revenue if it was signed: check that the
 == Upgrade Notice ==
 
 = 1.4.0 =
-Only with the identity snippet: the suggested privacy policy text changed (which pages the identifier is linked to; nothing stays linked after a withdrawal). Check Settings → Privacy and update your privacy policy.
+Bricks Builder forms now count as sent. Only with the identity snippet: the suggested privacy policy text changed (which pages the identifier is linked to; nothing stays linked after a withdrawal). Check Settings → Privacy and update your privacy policy.
 
 = 1.3.0 =
 Reports 404 pages and the Elementor Pro form id. The suggested privacy policy text changed (what is measured on a page, the legal basis for Cloudflare's own use): check Settings → Privacy and update your privacy policy.
