@@ -368,7 +368,7 @@ $post                  = get_post( $id );
 $checks['insert: 201 with the post id and nothing more']   = '201' === nf_answer( $created ) && array( 'post_id' ) === array_keys( $created->get_data() ) && is_int( $id ) && $id > 0;
 $checks['insert: a draft page by the user who ticked it']  = $post && 'draft' === $post->post_status && 'page' === $post->post_type && 7 === $post->post_author;
 $checks['insert: the text id is written with the post']    = '11111111-2222-4333-8444-555555555555' === $GLOBALS['nf_last_insert']['meta_input']['_nofluff_text_id'] && '11111111-2222-4333-8444-555555555555' === get_post_meta( $id, '_nofluff_text_id', true );
-$checks['insert: the hash is of the stored content']       = $post && false !== strpos( $post->post_content, '<br />' ) && md5( $post->post_content ) === get_post_meta( $id, '_nofluff_hash', true );
+$checks['insert: the hash is of the stored content']       = $post && false !== strpos( $post->post_content, '<br />' ) && md5( $post->post_title . "\0" . $post->post_name . "\0" . $post->post_content ) === get_post_meta( $id, '_nofluff_hash', true );
 $checks['insert: kses removed the script']                 = $post && false === strpos( $post->post_content, '<script' );
 $checks['insert: a backslash in the title survives']       = $post && 'Fenster C:\\Köln' === $post->post_title;
 $checks['insert: the slug is sanitised']                   = $post && sanitize_title( 'Fensterreinigung Köln' ) === $post->post_name;
@@ -379,12 +379,18 @@ $checks['a reused nonce is refused']                       = 'nofluff_replayed 4
 $count   = count( $GLOBALS['nf_posts'] );
 $updated = nf_dispatch( nf_signed( nf_draft( array( 'title' => 'Fensterreinigung Köln, neu', 'content' => '<p>Neu.</p>' ) ) ) );
 $checks['update: 200, the same post, still one post']      = '200' === nf_answer( $updated ) && $id === $updated->get_data()['post_id'] && count( $GLOBALS['nf_posts'] ) === $count;
-$checks['update: title, content and hash are new']         = 'Fensterreinigung Köln, neu' === $post->post_title && '<p>Neu.</p>' === $post->post_content && md5( '<p>Neu.</p>' ) === get_post_meta( $id, '_nofluff_hash', true );
+$checks['update: title, content and hash are new']         = 'Fensterreinigung Köln, neu' === $post->post_title && '<p>Neu.</p>' === $post->post_content && md5( 'Fensterreinigung Köln, neu' . "\0" . $post->post_name . "\0" . '<p>Neu.</p>' ) === get_post_meta( $id, '_nofluff_hash', true );
 $checks['update: status and author are kept']              = 'draft' === $post->post_status && 7 === $post->post_author;
 
 $post->post_status = 'pending';
-$checks['update: a pending draft stays pending']           = '200' === nf_answer( nf_dispatch( nf_signed( nf_draft() ) ) ) && 'pending' === $post->post_status;
+$before            = $post->post_content;
+$checks['pending: 409 edited, content unchanged']          = 'nofluff_edited 409' === nf_answer( nf_dispatch( nf_signed( nf_draft( array( 'content' => '<p>Overwrite?</p>' ) ) ) ) ) && 'pending' === $post->post_status && $before === $post->post_content;
 $post->post_status = 'draft';
+
+$title            = $post->post_title;
+$post->post_title = 'Von Hand';
+$checks['edited title: 409, title unchanged']              = 'nofluff_edited 409' === nf_answer( nf_dispatch( nf_signed( nf_draft() ) ) ) && 'Von Hand' === $post->post_title;
+$post->post_title = $title;
 
 // Never changed: published, scheduled, private, trashed, hand-edited.
 foreach ( array( 'publish' => 'nofluff_published 409', 'future' => 'nofluff_published 409', 'private' => 'nofluff_published 409', 'trash' => 'nofluff_trashed 409' ) as $status => $expected ) {

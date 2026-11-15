@@ -240,7 +240,8 @@ function nofluff_analytics_draft_save( $data, $author ) {
 		if ( ! in_array( $post->post_status, array( 'draft', 'pending' ), true ) ) {
 			return new WP_Error( 'nofluff_published', 'The post is no longer a draft.', array( 'status' => 409, 'post_id' => $id ) );
 		}
-		if ( md5( $post->post_content ) !== (string) get_post_meta( $id, '_nofluff_hash', true ) ) {
+		// Only a person submits a draft for review: that is a hand change too.
+		if ( 'draft' !== $post->post_status || nofluff_analytics_draft_hash( $post ) !== (string) get_post_meta( $id, '_nofluff_hash', true ) ) {
 			return new WP_Error( 'nofluff_edited', 'The draft was edited in WordPress.', array( 'status' => 409, 'post_id' => $id ) );
 		}
 		$fields['ID'] = $id;
@@ -262,7 +263,7 @@ function nofluff_analytics_draft_save( $data, $author ) {
 	}
 	$id     = (int) $result;
 	$stored = get_post( $id );
-	update_post_meta( $id, '_nofluff_hash', md5( $stored ? $stored->post_content : '' ) );
+	update_post_meta( $id, '_nofluff_hash', $stored ? nofluff_analytics_draft_hash( $stored ) : '' );
 	foreach ( nofluff_analytics_draft_seo_keys() as $pair ) {
 		if ( '' !== $data[ $pair[0] ] ) {
 			update_post_meta( $id, $pair[1], wp_slash( $data[ $pair[0] ] ) );
@@ -272,6 +273,17 @@ function nofluff_analytics_draft_save( $data, $author ) {
 		'created' => ! $found,
 		'post_id' => $id,
 	);
+}
+
+/**
+ * The fingerprint of what the endpoint writes, so a hand edit to any of it
+ * stops the next update.
+ *
+ * @param WP_Post $post The stored post.
+ * @return string
+ */
+function nofluff_analytics_draft_hash( $post ) {
+	return md5( $post->post_title . "\0" . $post->post_name . "\0" . $post->post_content );
 }
 
 /**
