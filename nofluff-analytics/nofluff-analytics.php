@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       No Fluff Analytics
  * Plugin URI:        https://github.com/NoFluffAgency/nofluff-wordpress
- * Description:       Connects this site to the No Fluff dashboard: adds the tracking script to every page and can report form submissions and WooCommerce orders as goals.
- * Version:           1.4.1
+ * Description:       Connects this site to the No Fluff dashboard: adds the tracking script to every page, can report form submissions and WooCommerce orders as goals, and can create drafts of texts approved in the dashboard (never published).
+ * Version:           1.5.0
  * Requires at least: 6.3
  * Requires PHP:      7.4
  * Author:            No Fluff
@@ -19,9 +19,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NOFLUFF_ANALYTICS_VERSION', '1.4.1' );
+define( 'NOFLUFF_ANALYTICS_VERSION', '1.5.0' );
 define( 'NOFLUFF_ANALYTICS_FILE', __FILE__ );
 define( 'NOFLUFF_ANALYTICS_OPTION', 'nofluff_analytics' );
+
+// Base64 of the raw Ed25519 public key the dashboard's worker signs drafts
+// with. Empty: draft creation is not available and every request is refused.
+// wp-config.php may define it first, for a local test with a test key.
+if ( ! defined( 'NOFLUFF_ANALYTICS_PUBLISH_KEY' ) ) {
+	define( 'NOFLUFF_ANALYTICS_PUBLISH_KEY', '' );
+}
 
 add_action(
 	'init',
@@ -34,11 +41,12 @@ add_action(
 require_once __DIR__ . '/includes/tracking.php';
 require_once __DIR__ . '/includes/admin.php';
 require_once __DIR__ . '/includes/updater.php';
+require_once __DIR__ . '/includes/drafts.php';
 
 /**
  * Settings with defaults. Stored as one option.
  *
- * @return array{tracking_id: string, ingest_secret: string, exclude_editors: bool, track_forms: bool, track_orders: bool, identity_snippet: bool}
+ * @return array{tracking_id: string, ingest_secret: string, exclude_editors: bool, track_forms: bool, track_orders: bool, identity_snippet: bool, allow_drafts: bool, draft_author: int}
  */
 function nofluff_analytics_settings() {
 	$saved = get_option( NOFLUFF_ANALYTICS_OPTION, array() );
@@ -55,6 +63,10 @@ function nofluff_analytics_settings() {
 			// the plugin never loads nf-id.js, because it cannot know whether
 			// a visitor agreed.
 			'identity_snippet' => false,
+			// Ticked by the site owner: the dashboard may create drafts, as
+			// the user who ticked it (draft_author).
+			'allow_drafts'     => false,
+			'draft_author'     => 0,
 		)
 	);
 }
@@ -92,9 +104,12 @@ function nofluff_analytics_parse_tracking_id( $input ) {
 register_uninstall_hook( __FILE__, 'nofluff_analytics_uninstall' );
 
 /**
- * Remove every trace on uninstall (not on deactivate).
+ * Remove every trace on uninstall (not on deactivate). Drafts the dashboard
+ * created stay: they are the site's content. Nonce transients expire.
  */
 function nofluff_analytics_uninstall() {
 	delete_option( NOFLUFF_ANALYTICS_OPTION );
 	delete_site_transient( 'nofluff_analytics_release' );
+	delete_post_meta_by_key( '_nofluff_text_id' );
+	delete_post_meta_by_key( '_nofluff_hash' );
 }
