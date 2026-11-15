@@ -219,7 +219,6 @@ function nofluff_analytics_draft_save( $data, $author ) {
 			'numberposts'      => 1,
 			'orderby'          => 'ID',
 			'order'            => 'ASC',
-			'suppress_filters' => true,
 		)
 	);
 
