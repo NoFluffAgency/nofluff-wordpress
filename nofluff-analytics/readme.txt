@@ -4,7 +4,7 @@ Tags: analytics, statistics, privacy, core web vitals, campaigns
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.1
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,7 @@ No Fluff Analytics adds the No Fluff tracking script to every page of your site.
 * Your own logged-in editors are not counted
 * Works with common caching and optimisation plugins (WP Rocket, Autoptimize, LiteSpeed Cache, SiteGround Optimizer, Cloudflare Rocket Loader)
 * Adds a suggested section to your privacy policy guide, with or without the identity snippet
+* Optional, off by default: the No Fluff dashboard can create drafts of texts approved there, never published, and never changes a published page. Each request is signed by the dashboard and checked on your server; the plugin sends nothing for it
 
 = External service =
 
@@ -57,6 +58,10 @@ No. It never loads the identity snippet itself, because it cannot know whether a
 
 In the dashboard, add a goal of type "Custom event" named `form_submit` (or `purchase` for WooCommerce orders).
 
+= Can the dashboard publish to my site? =
+
+No. It can only create drafts, and only after you tick "Let the No Fluff dashboard create drafts" under Settings → No Fluff; the box is off by default. The drafts are created in the name of the user who ticked it. A draft is updated only while nobody has edited it in WordPress; once it is published, scheduled, private, in the trash or edited by hand, the dashboard leaves it as it is. You publish a draft yourself, in WordPress. Untick the box to stop it at any time.
+
 = Where does the order secret come from? =
 
 From your site's page in the dashboard, next to the site ID. It is needed if you want orders and their totals in the dashboard's Orders and Revenue figures: the plugin signs each order with it on your server, so only your shop can report orders for your site. It does not check that an order was paid (see below). Without it, orders only count as goal conversions. If a new secret is created for your site in the dashboard (No Fluff does this on request), paste it here as well. Orders placed in between are not counted as orders or revenue.
@@ -68,6 +73,11 @@ First check that it was sent at all. Orders placed while logged in as an adminis
 An order only counts as an order and as revenue if it was signed: check that the order secret here matches the one in the dashboard. Orders in a currency other than the site's own are counted as orders but not added to the revenue, and single orders above 10,000 are not counted. The same order number counts once, so use one site ID per shop, and keep in mind that changing the order numbering later can reuse numbers that were already counted. Revenue is the order total at checkout, including orders still awaiting payment such as bank transfers; refunds and later cancellations are not subtracted.
 
 == Changelog ==
+
+= 1.5.0 =
+* New setting "Let the No Fluff dashboard create drafts", off by default: the dashboard can create a draft of a text approved there, with its title, body, slug and, with Yoast SEO or Rank Math, the SEO title and description. Nothing is ever published, and a published, trashed or hand-edited post is never changed. The drafts are created in the name of the user who ticked the box.
+* Each request is signed by the dashboard (Ed25519) and checked on your server, with a five-minute window and a single-use nonce. The plugin sends nothing for it; the suggested privacy policy text is unchanged.
+* Uninstalling removes the two markers the plugin adds to its drafts; the drafts themselves stay.
 
 = 1.4.1 =
 * Bricks Builder forms count as sent, with the form element's id, like the other form plugins.
@@ -99,6 +109,9 @@ An order only counts as an order and as revenue if it was signed: check that the
 * First release.
 
 == Upgrade Notice ==
+
+= 1.5.0 =
+Optional, off by default: the No Fluff dashboard can create drafts of approved texts. Nothing changes on your site until you tick the box under Settings → No Fluff.
 
 = 1.4.1 =
 Bricks Builder forms now count as sent. Only with the identity snippet: the suggested privacy policy text changed (which pages the identifier is linked to; nothing stays linked after a withdrawal). Check Settings → Privacy and update your privacy policy.

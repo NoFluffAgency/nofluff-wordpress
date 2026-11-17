@@ -20,6 +20,7 @@ the site ID from the dashboard.
 | Form submissions | on | `form_submit` event on success in Contact Form 7, WPForms, Gravity Forms, Elementor Pro (plugin + form id only) |
 | WooCommerce orders | on | One `purchase` event per order (order number, total, currency, and the signature when a secret is set); none for failed or cancelled payments or outside the `production` environment type |
 | I placed the identity snippet in my consent tool | off | Only switches the suggested privacy policy text to the version for the identity snippet. The settings screen shows `<script defer src="https://app.nofluff.agency/nf-id.js"></script>` to copy into the statistics category of the site's consent tool; the plugin never loads it, because it cannot know whether a visitor agreed. The snippet stores one random identifier and hands it to the tracking script on the same page with `nf("identify", id)`; the plugin's queue stub in the head takes the call if the tracking script has not loaded yet |
+| Let the No Fluff dashboard create drafts | off | The dashboard's worker may `POST /?rest_route=/nofluff/v1/draft` a text approved in the dashboard; it becomes a draft (title, body, slug, and the Yoast SEO or Rank Math title and description) authored by the user who ticked the box. Never published; a published, scheduled, private, trashed or hand-edited post is never changed. The body is signed with Ed25519 (`X-NoFluff-Signature`) and checked against the pinned public key, with a 300-second window and a single-use nonce. Shown as not available while no key is pinned |
 
 Also: exclusion attributes and filters for WP Rocket, Autoptimize, LiteSpeed
 Cache, SiteGround Optimizer, NitroPack and Cloudflare Rocket Loader; a
@@ -27,7 +28,9 @@ suggested section in Settings → Privacy, with or without the identity
 snippet; German translation; uninstall removes all settings.
 
 Hooks: `NOFLUFF_ANALYTICS_HOST` constant or `nofluff_analytics_host` filter
-(other region), `nofluff_analytics_should_track` filter (e.g. staging).
+(other region), `nofluff_analytics_should_track` filter (e.g. staging),
+`NOFLUFF_ANALYTICS_PUBLISH_KEY` constant in wp-config.php (base64 of a raw
+Ed25519 public key, replaces the pinned one, for a local test of drafts).
 
 ## Requirements
 
@@ -38,7 +41,10 @@ translation needs WordPress 6.5+ (PHP translation files).
 
 1. Bump the version in three places: the `Version:` header and
    `NOFLUFF_ANALYTICS_VERSION` in `nofluff-analytics.php`, and
-   `Stable tag` in `readme.txt`. Add a changelog entry.
+   `Stable tag` in `readme.txt`. Add a changelog entry. While
+   `NOFLUFF_ANALYTICS_PUBLISH_KEY` in `nofluff-analytics.php` is empty, the
+   drafts endpoint refuses every request: pin the worker's public key before
+   a release that should create drafts.
 2. Merge to `main`, then tag: `git tag v1.0.1 && git push origin v1.0.1`.
 3. CI checks that the three versions match the tag, builds
    `nofluff-analytics.zip` and publishes the release. Sites with the plugin

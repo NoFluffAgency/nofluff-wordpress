@@ -72,6 +72,14 @@ function nofluff_analytics_sanitize( $input ) {
 		$secret = nofluff_analytics_settings()['ingest_secret'];
 	}
 
+	// Drafts are created as the user who ticked the box, kept while it stays ticked.
+	$saved        = nofluff_analytics_settings();
+	$allow_drafts = ! empty( $input['allow_drafts'] );
+	$draft_author = 0;
+	if ( $allow_drafts ) {
+		$draft_author = ( $saved['allow_drafts'] && (int) $saved['draft_author'] > 0 ) ? (int) $saved['draft_author'] : get_current_user_id();
+	}
+
 	return array(
 		'tracking_id'      => $id,
 		'ingest_secret'    => $secret,
@@ -79,6 +87,8 @@ function nofluff_analytics_sanitize( $input ) {
 		'track_forms'      => ! empty( $input['track_forms'] ),
 		'track_orders'     => ! empty( $input['track_orders'] ),
 		'identity_snippet' => ! empty( $input['identity_snippet'] ),
+		'allow_drafts'     => $allow_drafts,
+		'draft_author'     => $draft_author,
 	);
 }
 
@@ -159,6 +169,20 @@ function nofluff_analytics_render_page() {
 							</label>
 						</p>
 						<p class="description"><?php esc_html_e( 'Your privacy policy has to mention the identifier, including that once the visitor agrees it is linked to the page they agreed on and the pages opened after it, not to earlier pages of that visit, and that a withdrawal takes effect from the next page. This box only switches the suggested text under Settings → Privacy to that version. Tracking is the same either way.', 'nofluff-analytics' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Drafts', 'nofluff-analytics' ); ?></th>
+					<td>
+						<?php if ( '' === nofluff_analytics_publish_key() ) : ?>
+							<p class="description"><?php esc_html_e( 'Draft creation is not available in this build.', 'nofluff-analytics' ); ?></p>
+						<?php else : ?>
+							<label>
+								<input type="checkbox" name="<?php echo esc_attr( $name ); ?>[allow_drafts]" value="1" <?php checked( $settings['allow_drafts'] ); ?> />
+								<?php esc_html_e( 'Let the No Fluff dashboard create drafts', 'nofluff-analytics' ); ?>
+							</label>
+							<p class="description"><?php esc_html_e( 'Only drafts: nothing is published, and published pages are never changed. Drafts are created in your name.', 'nofluff-analytics' ); ?></p>
+						<?php endif; ?>
 					</td>
 				</tr>
 			</table>
