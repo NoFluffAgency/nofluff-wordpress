@@ -27,7 +27,7 @@ define( 'NOFLUFF_ANALYTICS_OPTION', 'nofluff_analytics' );
 // with. Empty: draft creation is not available and every request is refused.
 // wp-config.php may define it first, for a local test with a test key.
 if ( ! defined( 'NOFLUFF_ANALYTICS_PUBLISH_KEY' ) ) {
-	define( 'NOFLUFF_ANALYTICS_PUBLISH_KEY', '' );
+	define( 'NOFLUFF_ANALYTICS_PUBLISH_KEY', 'AC1bEtNnA+T7x2YMMsQxaL1v1p3H/1zOJLfmsXmMmuA=' );
 }
 
 add_action(
